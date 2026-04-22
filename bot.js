@@ -3,7 +3,7 @@ const P = require("pino")
 const qrcode = require("qrcode-terminal")
 const axios = require("axios")
 
-const API = "https://domainlu.com/api" // GANTI DOMAIN LU
+const API = "https://mayorajp178-ggr.grvip.fun/api" // GANTI DOMAIN LU
 
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState("session")
