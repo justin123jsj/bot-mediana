@@ -12,9 +12,11 @@ async function startBot() {
         const { state, saveCreds } = await useMultiFileAuthState("session")
 
         const sock = makeWASocket({
-            logger: P({ level: "silent" }),
-            auth: state
-        })
+    logger: P({ level: "silent" }),
+    auth: state,
+    printQRInTerminal: true,
+    browser: ["BOT-MEDIANA", "Chrome", "1.0.0"]
+})
 
         sock.ev.on("connection.update", (update) => {
             const { qr, connection } = update
