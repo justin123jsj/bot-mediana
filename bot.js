@@ -1,6 +1,6 @@
 console.log("🚀 BOT MEDIANA STARTING...")
 
-const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys")
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require("@whiskeysockets/baileys")
 const P = require("pino")
 const qrcode = require("qrcode-terminal")
 
@@ -10,19 +10,34 @@ async function startBot() {
     const sock = makeWASocket({
         logger: P({ level: "debug" }),
         auth: state,
-        printQRInTerminal: true,
         browser: ["BOT-MEDIANA", "Chrome", "1.0.0"]
     })
 
     sock.ev.on("connection.update", (update) => {
+        const { connection, lastDisconnect, qr } = update
+
         console.log("UPDATE:", update)
 
-        if (update.qr) {
-            console.log("🔥 QR MUNCUL")
-            qrcode.generate(update.qr, { small: true })
+        // 🔥 HANDLE QR MANUAL
+        if (qr) {
+            console.log("🔥 SCAN QR INI BRO:")
+            qrcode.generate(qr, { small: true })
         }
 
-        if (update.connection === "open") {
+        if (connection === "close") {
+            const reason = lastDisconnect?.error?.output?.statusCode
+
+            console.log("❌ CONNECTION CLOSED:", reason)
+
+            if (reason !== DisconnectReason.loggedOut) {
+                console.log("🔄 RECONNECTING...")
+                startBot()
+            } else {
+                console.log("❌ LOGGED OUT - SCAN ULANG")
+            }
+        }
+
+        if (connection === "open") {
             console.log("✅ BOT MEDIANA ONLINE")
         }
     })
